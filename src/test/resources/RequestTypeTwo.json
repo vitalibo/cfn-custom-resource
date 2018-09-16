@@ -1,0 +1,17 @@
+{
+  "RequestType": "Create",
+  "RequestId": "unique id for this update request",
+  "ResponseURL": "pre-signed-url-for-update-response",
+  "StackId": "arn:aws:cloudformation:us-east-2:namespace:stack/stack-name/guid",
+  "ResourceType": "Custom::TypeTwo",
+  "LogicalResourceId": "name of resource in template",
+  "PhysicalResourceId": "custom resource provider-defined physical id",
+  "ResourceProperties": {
+    "string": "value",
+    "list": [
+      1,
+      2,
+      3
+    ]
+  }
+}
