@@ -10,10 +10,12 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
     @SuppressWarnings("unchecked")
     default ResourceProvisionResponse process(ResourceProvisionRequest request) throws ResourceProvisionException {
         final Properties resourceProperties = (Properties) request.getResourceProperties();
+        verify(resourceProperties);
 
         final Properties oldResourceProperties;
         try {
             oldResourceProperties = (Properties) request.getOldResourceProperties();
+            verify(oldResourceProperties);
 
         } catch (ResourceProvisionException ignored) {
             // When status UPDATE_ROLLBACK_IN_PROGRESS
@@ -38,5 +40,7 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
     }
 
     Data update(Properties properties, Properties oldProperties, String physicalResourceId) throws ResourceProvisionException;
+
+    void verify(Properties properties) throws ResourceProvisionException;
 
 }

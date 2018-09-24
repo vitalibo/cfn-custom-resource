@@ -25,7 +25,6 @@ public class UpdateFacadeTest {
         ResourceProperties resourceProperties = request.getResourceProperties();
         ResourceProperties oldResourceProperties = request.getOldResourceProperties();
         ResourceData resourceData = makeResourceData();
-
         Mockito.doReturn(resourceData)
             .when(spyUpdateFacade).update(Mockito.any(), Mockito.any(), Mockito.anyString());
 
@@ -39,20 +38,21 @@ public class UpdateFacadeTest {
         Assert.assertEquals(actual.getStackId(), "stack id");
         Assert.assertEquals(actual.getPhysicalResourceId(), "new physical resource id");
         Assert.assertEquals(actual.getData(), resourceData);
+        Mockito.verify(spyUpdateFacade).verify(resourceProperties);
+        Mockito.verify(spyUpdateFacade).verify(oldResourceProperties);
         Mockito.verify(spyUpdateFacade).update(resourceProperties, oldResourceProperties, "physical resource id");
     }
 
     @Test
     public void testUpdateRollbackInProgressAfterFail() {
-        ResourceProvisionRequest spyRequest = Mockito.spy(makeResourceProvisionRequest());
+        ResourceProvisionRequest request = makeResourceProvisionRequest();
         ResourceData resourceData = makeResourceData();
         Mockito.doThrow(ResourceProvisionException.class)
-            .when(spyRequest).getOldResourceProperties();
-
+            .when(spyUpdateFacade).verify(request.getOldResourceProperties());
         Mockito.doReturn(resourceData)
             .when(spyUpdateFacade).update(Mockito.any(), Mockito.any(), Mockito.anyString());
 
-        ResourceProvisionResponse actual = spyUpdateFacade.process(spyRequest);
+        ResourceProvisionResponse actual = spyUpdateFacade.process(request);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -62,6 +62,21 @@ public class UpdateFacadeTest {
         Assert.assertEquals(actual.getStackId(), "stack id");
         Assert.assertEquals(actual.getPhysicalResourceId(), "physical resource id");
         Assert.assertNull(actual.getData());
+        Mockito.verify(spyUpdateFacade).verify(request.getResourceProperties());
+        Mockito.verify(spyUpdateFacade).verify(request.getOldResourceProperties());
+        Mockito.verify(spyUpdateFacade, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.anyString());
+    }
+
+    @Test
+    public void testFailVerify() {
+        ResourceProvisionRequest request = makeResourceProvisionRequest();
+        Mockito.doThrow(ResourceProvisionException.class)
+            .when(spyUpdateFacade).verify(request.getResourceProperties());
+
+        Assert.expectThrows(ResourceProvisionException.class, () -> spyUpdateFacade.process(request));
+
+        Mockito.verify(spyUpdateFacade).verify(request.getResourceProperties());
+        Mockito.verify(spyUpdateFacade, Mockito.never()).verify(request.getOldResourceProperties());
         Mockito.verify(spyUpdateFacade, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.anyString());
     }
 

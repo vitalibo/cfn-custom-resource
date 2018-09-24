@@ -14,6 +14,7 @@ public interface CreateFacade<Properties extends ResourceProperties, Data extend
             StackUtils.makeDefaultPhysicalResourceId(request));
 
         final Properties resourceProperties = (Properties) request.getResourceProperties();
+        verify(resourceProperties);
 
         final Data resourceData = create(resourceProperties);
 
@@ -27,5 +28,7 @@ public interface CreateFacade<Properties extends ResourceProperties, Data extend
     }
 
     Data create(Properties properties) throws ResourceProvisionException;
+
+    void verify(Properties properties) throws ResourceProvisionException;
 
 }
