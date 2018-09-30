@@ -4,7 +4,7 @@ import com.github.vitalibo.cfn.resource.Facade;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
 
-public interface UpdateFacade<Properties extends ResourceProperties, Data extends ResourceData> extends Facade {
+public interface UpdateFacade<Properties extends ResourceProperties, Data extends ResourceData<Data>> extends Facade {
 
     @Override
     @SuppressWarnings("unchecked")
@@ -41,6 +41,7 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
 
     Data update(Properties properties, Properties oldProperties, String physicalResourceId) throws ResourceProvisionException;
 
-    void verify(Properties properties) throws ResourceProvisionException;
+    default void verify(Properties properties) throws ResourceProvisionException {
+    }
 
 }

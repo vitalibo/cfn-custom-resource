@@ -81,7 +81,6 @@ public class AbstractFactoryTest {
         PreSignedUrl actual = spyFactory.createPreSignedUrl("http://foo.bar");
 
         Assert.assertNotNull(actual);
-        Mockito.verify(spyFactory).createJackson();
     }
 
     @Test
@@ -96,15 +95,13 @@ public class AbstractFactoryTest {
         Assert.assertTrue(request.getResourceProperties() instanceof TypeOne);
     }
 
+    @Getter
     @AllArgsConstructor
     private enum TestResourceType implements ResourceType {
 
         TypeOne("Custom::TypeOne", TypeOne.class);
 
-        @Getter
         private final String typeName;
-
-        @Getter
         private final Class<? extends ResourceProperties> typeClass;
 
     }
@@ -123,7 +120,6 @@ public class AbstractFactoryTest {
         public TestFactory() {
             super(TestResourceType.class);
         }
-
 
     }
 

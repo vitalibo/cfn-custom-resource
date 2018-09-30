@@ -19,15 +19,11 @@ import java.io.OutputStreamWriter;
 public class ResourceProvisionHandler<Type extends Enum<?> & ResourceType> implements RequestStreamHandler {
 
     private final AbstractFactory<Type> factory;
-    private final ObjectMapper jackson;
-
-    public ResourceProvisionHandler(AbstractFactory<Type> factory) {
-        this(factory, factory.createJackson());
-    }
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
-        final ResourceProvisionRequest request = jackson.readValue(input, ResourceProvisionRequest.class);
+        final ObjectMapper jackson = factory.createJackson();
+        ResourceProvisionRequest request = jackson.readValue(input, ResourceProvisionRequest.class);
 
         ResourceProvisionResponse response = handleRequest(request, context);
 

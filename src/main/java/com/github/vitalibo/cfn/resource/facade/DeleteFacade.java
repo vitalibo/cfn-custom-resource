@@ -5,7 +5,7 @@ import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
 import com.github.vitalibo.cfn.resource.util.StackUtils;
 
-public interface DeleteFacade<Properties extends ResourceProperties, Data extends ResourceData> extends Facade {
+public interface DeleteFacade<Properties extends ResourceProperties, Data extends ResourceData<Data>> extends Facade {
 
     @Override
     @SuppressWarnings("unchecked")

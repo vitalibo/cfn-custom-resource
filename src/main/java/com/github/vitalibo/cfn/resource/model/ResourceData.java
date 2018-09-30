@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ResourceData {
+public class ResourceData<T extends ResourceData> {
 
     @JsonProperty(value = "PhysicalResourceId")
     private String physicalResourceId;
 
     @SuppressWarnings("unchecked")
-    public <T extends ResourceData> T withPhysicalResourceId(String physicalResourceId) {
+    public T withPhysicalResourceId(String physicalResourceId) {
         this.physicalResourceId = physicalResourceId;
         return (T) this;
     }

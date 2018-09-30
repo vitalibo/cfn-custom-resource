@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 public class DeleteFacadeTest {
 
     @Spy
-    private DeleteFacade<ResourceProperties, ResourceData> spyDeleteFacade;
+    private DeleteFacade<ResourceProperties, ? extends ResourceData> spyDeleteFacade;
 
     @BeforeMethod
     public void setUp() {

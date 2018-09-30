@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 public class CreateFacadeTest {
 
     @Spy
-    private CreateFacade<ResourceProperties, ResourceData> spyCreateFacade;
+    private CreateFacade<ResourceProperties, ? extends ResourceData> spyCreateFacade;
 
     @BeforeMethod
     public void setUp() {

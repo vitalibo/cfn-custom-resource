@@ -38,7 +38,8 @@ public class ResourceProvisionHandlerTest {
     @SuppressWarnings("unchecked")
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        spyResourceProvisionHandler = Mockito.spy(new ResourceProvisionHandler(mockAbstractFactory, mockObjectMapper));
+        spyResourceProvisionHandler = Mockito.spy(new ResourceProvisionHandler(mockAbstractFactory));
+        Mockito.when(mockAbstractFactory.createJackson()).thenReturn(mockObjectMapper);
     }
 
     @Test

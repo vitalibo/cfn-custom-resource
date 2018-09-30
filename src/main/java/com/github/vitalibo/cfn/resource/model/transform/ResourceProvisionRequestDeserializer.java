@@ -29,7 +29,7 @@ public class ResourceProvisionRequestDeserializer extends JsonDeserializer<Resou
         return deserialize(new JsonNodeParser(parser), context);
     }
 
-    ResourceProvisionRequest deserialize(JsonNodeParser parser, DeserializationContext context) throws IOException {
+    private ResourceProvisionRequest deserialize(JsonNodeParser parser, DeserializationContext context) throws IOException {
         final ResourceProvisionRequest request = new ResourceProvisionRequest();
 
         request.setRequestType(RequestType.valueOf(parser.text("RequestType")));
@@ -58,7 +58,7 @@ public class ResourceProvisionRequestDeserializer extends JsonDeserializer<Resou
         return request;
     }
 
-    static Map<String, ResourceType> enumConstantsToResourceType(Class<? extends Enum<?>> enumClass) {
+    private static Map<String, ResourceType> enumConstantsToResourceType(Class<? extends Enum<?>> enumClass) {
         return Arrays.stream(enumClass.getEnumConstants())
             .map(o -> (ResourceType) o)
             .collect(Collectors.toMap(ResourceType::getTypeName, o -> o));
