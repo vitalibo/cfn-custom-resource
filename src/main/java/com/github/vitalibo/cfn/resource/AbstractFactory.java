@@ -9,6 +9,7 @@ import com.github.vitalibo.cfn.resource.model.transform.ResourceProvisionRequest
 import com.github.vitalibo.cfn.resource.util.PreSignedUrl;
 
 import java.net.MalformedURLException;
+import java.util.Objects;
 
 public abstract class AbstractFactory<Type extends Enum<?> & ResourceType> {
 
@@ -20,21 +21,30 @@ public abstract class AbstractFactory<Type extends Enum<?> & ResourceType> {
 
     @SuppressWarnings("unchecked")
     Facade createCreateFacade(ResourceProvisionRequest request) {
-        return createCreateFacade((Type) request.getResourceType());
+        ResourceType resourceType = request.getResourceType();
+        requireNonNull(resourceType);
+
+        return createCreateFacade((Type) resourceType);
     }
 
     public abstract Facade createCreateFacade(Type resourceType);
 
     @SuppressWarnings("unchecked")
     Facade createDeleteFacade(ResourceProvisionRequest request) {
-        return createDeleteFacade((Type) request.getResourceType());
+        ResourceType resourceType = request.getResourceType();
+        requireNonNull(resourceType);
+
+        return createDeleteFacade((Type) resourceType);
     }
 
     public abstract Facade createDeleteFacade(Type resourceType);
 
     @SuppressWarnings("unchecked")
     Facade createUpdateFacade(ResourceProvisionRequest request) {
-        return createUpdateFacade((Type) request.getResourceType());
+        ResourceType resourceType = request.getResourceType();
+        requireNonNull(resourceType);
+
+        return createUpdateFacade((Type) resourceType);
     }
 
     public abstract Facade createUpdateFacade(Type resourceType);
@@ -56,6 +66,12 @@ public abstract class AbstractFactory<Type extends Enum<?> & ResourceType> {
         mapper.registerModule(module);
         mapper.setSerializationInclusion(Include.NON_NULL);
         return mapper;
+    }
+
+    private static void requireNonNull(ResourceType resourceType) {
+        if (Objects.isNull(resourceType)) {
+            throw new ResourceProvisionException("Unsupported Resource Type");
+        }
     }
 
 }

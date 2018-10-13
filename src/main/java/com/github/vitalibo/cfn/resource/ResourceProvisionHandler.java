@@ -34,23 +34,23 @@ public class ResourceProvisionHandler<Type extends Enum<?> & ResourceType> imple
     }
 
     public ResourceProvisionResponse handleRequest(ResourceProvisionRequest request, Context context) throws IOException {
-        final Facade facade;
-        switch (request.getRequestType()) {
-            case Create:
-                facade = factory.createCreateFacade(request);
-                break;
-            case Delete:
-                facade = factory.createDeleteFacade(request);
-                break;
-            case Update:
-                facade = factory.createUpdateFacade(request);
-                break;
-            default:
-                throw new IllegalStateException();
-        }
-
         ResourceProvisionResponse response;
         try {
+            Facade facade;
+            switch (request.getRequestType()) {
+                case Create:
+                    facade = factory.createCreateFacade(request);
+                    break;
+                case Delete:
+                    facade = factory.createDeleteFacade(request);
+                    break;
+                case Update:
+                    facade = factory.createUpdateFacade(request);
+                    break;
+                default:
+                    throw new IllegalStateException();
+            }
+
             response = facade.process(request);
         } catch (ResourceProvisionException e) {
             response = new ResourceProvisionResponse()

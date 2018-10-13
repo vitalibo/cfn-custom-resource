@@ -3,9 +3,10 @@ package com.github.vitalibo.cfn.resource.facade;
 import com.github.vitalibo.cfn.resource.Facade;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
+import com.github.vitalibo.cfn.resource.util.Rules;
 import com.github.vitalibo.cfn.resource.util.StackUtils;
 
-public interface CreateFacade<Properties extends ResourceProperties, Data extends ResourceData<Data>> extends Facade {
+public interface CreateFacade<Properties extends ResourceProperties, Data extends ResourceData<Data>> extends Facade, Rules.Verifier<Properties> {
 
     @Override
     @SuppressWarnings("unchecked")
@@ -28,8 +29,5 @@ public interface CreateFacade<Properties extends ResourceProperties, Data extend
     }
 
     Data create(Properties properties) throws ResourceProvisionException;
-
-    default void verify(Properties properties) throws ResourceProvisionException {
-    }
 
 }

@@ -12,7 +12,7 @@ public interface DeleteFacade<Properties extends ResourceProperties, Data extend
     default ResourceProvisionResponse process(ResourceProvisionRequest request) throws ResourceProvisionException {
         final Properties resourceProperties = (Properties) request.getResourceProperties();
 
-        if (StackUtils.hasDefaultPhysicalResourceId(request)) {
+        if (StackUtils.hasDefaultPhysicalResourceId(request) || resourceProperties.hasDeserializationError()) {
 
             return new ResourceProvisionResponse()
                 .withStatus(Status.SUCCESS)

@@ -80,17 +80,65 @@ public class ResourceProvisionRequestDeserializerTest {
         Assert.assertEquals(resourceProperties.getList(), Arrays.asList(1, 2, 3));
     }
 
+    @Test
+    public void testDeserializeWithCastProblem() throws IOException {
+        String json = TestHelper.resourceAsString("/RequestTypeThree.json");
 
+        ResourceProvisionRequest actual = jackson.readValue(json, ResourceProvisionRequest.class);
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getRequestType(), RequestType.Update);
+        Assert.assertEquals(actual.getResponseUrl(), "pre-signed-url-for-update-response");
+        Assert.assertEquals(actual.getStackId(), "arn:aws:cloudformation:us-east-2:namespace:stack/stack-name/guid");
+        Assert.assertEquals(actual.getRequestId(), "unique id for this update request");
+        Assert.assertEquals(actual.getResourceType(), SampleResourceType.TypeThree);
+        Assert.assertEquals(actual.getLogicalResourceId(), "name of resource in template");
+        Assert.assertEquals(actual.getPhysicalResourceId(), "custom resource provider-defined physical id");
+        Assert.assertTrue(actual.getResourceProperties() instanceof TypeThree);
+        TypeThree resourceProperties = (TypeThree) actual.getResourceProperties();
+        Assert.assertTrue(resourceProperties.hasDeserializationError());
+        Assert.assertNull(resourceProperties.getKey1());
+        Assert.assertNull(resourceProperties.getKey2());
+        Assert.assertTrue(actual.getOldResourceProperties() instanceof TypeThree);
+        TypeThree oldResourceProperties = (TypeThree) actual.getOldResourceProperties();
+        Assert.assertFalse(oldResourceProperties.hasDeserializationError());
+        Assert.assertEquals(oldResourceProperties.getKey1(), (Integer) 1);
+        Assert.assertNull(oldResourceProperties.getKey2());
+    }
+
+    @Test
+    public void testDeserializeWithUnknownProperties() throws IOException {
+        String json = TestHelper.resourceAsString("/RequestTypeThree.json")
+            .replaceAll("TypeThree", "TypeFour");
+
+        ResourceProvisionRequest actual = jackson.readValue(json, ResourceProvisionRequest.class);
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getRequestType(), RequestType.Update);
+        Assert.assertEquals(actual.getResponseUrl(), "pre-signed-url-for-update-response");
+        Assert.assertEquals(actual.getStackId(), "arn:aws:cloudformation:us-east-2:namespace:stack/stack-name/guid");
+        Assert.assertEquals(actual.getRequestId(), "unique id for this update request");
+        Assert.assertEquals(actual.getResourceType(), SampleResourceType.TypeFour);
+        Assert.assertEquals(actual.getLogicalResourceId(), "name of resource in template");
+        Assert.assertEquals(actual.getPhysicalResourceId(), "custom resource provider-defined physical id");
+        Assert.assertTrue(actual.getResourceProperties() instanceof TypeFour);
+        TypeFour resourceProperties = (TypeFour) actual.getResourceProperties();
+        Assert.assertTrue(resourceProperties.hasDeserializationError());
+        Assert.assertNull(resourceProperties.getKey1());
+        Assert.assertTrue(actual.getOldResourceProperties() instanceof TypeFour);
+        TypeFour oldResourceProperties = (TypeFour) actual.getOldResourceProperties();
+        Assert.assertFalse(oldResourceProperties.hasDeserializationError());
+        Assert.assertEquals(oldResourceProperties.getKey1(), "1");
+    }
+
+    @Getter
     @AllArgsConstructor
     private enum SampleResourceType implements ResourceType {
 
-        TypeOne("Custom::TypeOne", TypeOne.class),
-        TypeTwo("Custom::TypeTwo", TypeTwo.class);
+        TypeOne("Custom::TypeOne", TypeOne.class), TypeTwo("Custom::TypeTwo", TypeTwo.class),
+        TypeThree("Custom::TypeThree", TypeThree.class), TypeFour("Custom::TypeFour", TypeFour.class);
 
-        @Getter
         private final String typeName;
-
-        @Getter
         private final Class<? extends ResourceProperties> typeClass;
 
     }
@@ -112,5 +160,19 @@ public class ResourceProvisionRequestDeserializerTest {
 
     }
 
+    @Data
+    private static class TypeThree extends ResourceProperties {
+
+        private Integer key1;
+        private List<String> key2;
+
+    }
+
+    @Data
+    private static class TypeFour extends ResourceProperties {
+
+        private String key1;
+
+    }
 
 }

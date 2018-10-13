@@ -6,8 +6,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.vitalibo.cfn.resource.model.RequestType;
+import com.github.vitalibo.cfn.resource.model.ResourceProperties;
 import com.github.vitalibo.cfn.resource.model.ResourceProvisionRequest;
 import com.github.vitalibo.cfn.resource.model.ResourceType;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,10 +30,10 @@ public class ResourceProvisionRequestDeserializer extends JsonDeserializer<Resou
 
     @Override
     public ResourceProvisionRequest deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-        return deserialize(new JsonNodeParser(parser), context);
+        return deserialize(new JsonNodeParser(parser), new DeserializationContextWrapper(context));
     }
 
-    private ResourceProvisionRequest deserialize(JsonNodeParser parser, DeserializationContext context) throws IOException {
+    private ResourceProvisionRequest deserialize(JsonNodeParser parser, DeserializationContextWrapper context) throws IOException {
         final ResourceProvisionRequest request = new ResourceProvisionRequest();
 
         request.setRequestType(RequestType.valueOf(parser.text("RequestType")));
@@ -44,14 +48,14 @@ public class ResourceProvisionRequestDeserializer extends JsonDeserializer<Resou
         request.setPhysicalResourceId(parser.text("PhysicalResourceId"));
 
         final JsonParser resourcePropertiesParser = parser.traverse("ResourceProperties");
-        if (Objects.nonNull(resourcePropertiesParser)) {
-            request.setResourceProperties(context.readValue(
+        if (Objects.nonNull(resourceType) && Objects.nonNull(resourcePropertiesParser)) {
+            request.setResourceProperties(context.readResourceProperties(
                 resourcePropertiesParser, resourceType.getTypeClass()));
         }
 
         final JsonParser oldResourcePropertiesParser = parser.traverse("OldResourceProperties");
-        if (Objects.nonNull(oldResourcePropertiesParser)) {
-            request.setOldResourceProperties(context.readValue(
+        if (Objects.nonNull(resourceType) && Objects.nonNull(oldResourcePropertiesParser)) {
+            request.setOldResourceProperties(context.readResourceProperties(
                 oldResourcePropertiesParser, resourceType.getTypeClass()));
         }
 
@@ -90,6 +94,25 @@ public class ResourceProvisionRequestDeserializer extends JsonDeserializer<Resou
 
         private Optional<JsonNode> node(String fieldName) {
             return Optional.ofNullable(root.get(fieldName));
+        }
+
+    }
+
+    @RequiredArgsConstructor
+    private static class DeserializationContextWrapper {
+
+        @Delegate
+        private final DeserializationContext context;
+
+        @SneakyThrows
+        public ResourceProperties readResourceProperties(JsonParser resourcePropertiesParser,
+                                                         Class<? extends ResourceProperties> typeClass) {
+            try {
+                return context.readValue(resourcePropertiesParser, typeClass);
+            } catch (IOException e) {
+                return typeClass.newInstance()
+                    .withDeserializationError(e.getMessage());
+            }
         }
 
     }

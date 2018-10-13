@@ -62,6 +62,29 @@ public class DeleteFacadeTest {
         Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString());
     }
 
+    @Test
+    public void testProcessWhenHasDeserializationError() {
+        ResourceProvisionRequest request = makeResourceProvisionRequest();
+        ResourceProperties properties = request.getResourceProperties();
+        properties.setDeserializationError("deserialization error");
+        ResourceData resourceData = makeResourceData();
+
+        Mockito.doReturn(resourceData)
+            .when(spyDeleteFacade).delete(Mockito.any(), Mockito.anyString());
+
+        ResourceProvisionResponse actual = spyDeleteFacade.process(request);
+
+        Assert.assertNotNull(actual);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getStatus(), Status.SUCCESS);
+        Assert.assertEquals(actual.getLogicalResourceId(), "logical resource id");
+        Assert.assertEquals(actual.getRequestId(), "request id");
+        Assert.assertEquals(actual.getStackId(), "stack id");
+        Assert.assertEquals(actual.getPhysicalResourceId(), "physical resource id");
+        Assert.assertNull(actual.getData());
+        Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString());
+    }
+
     private static ResourceProvisionRequest makeResourceProvisionRequest() {
         ResourceProvisionRequest request = new ResourceProvisionRequest();
         request.setRequestType(RequestType.Delete);

@@ -26,18 +26,18 @@ public class RulesTest {
     }
 
     @Test
-    public void testVerify() {
-        rules.verify(mockResourceProperties);
+    public void testVerifyRules() {
+        rules.forEach(mockResourceProperties);
 
         Mockito.verify(mockRule).accept(mockResourceProperties);
     }
 
     @Test(expectedExceptions = ResourceProvisionException.class)
-    public void testFailVerify() {
+    public void testFailVerifyRule() {
         Mockito.doThrow(ResourceProvisionException.class)
             .when(mockRule).accept(Mockito.any());
 
-        rules.verify(mockResourceProperties);
+        rules.forEach(mockResourceProperties);
     }
 
 }

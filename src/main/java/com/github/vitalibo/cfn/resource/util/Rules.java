@@ -16,8 +16,23 @@ public class Rules<Properties extends ResourceProperties> {
         this.rules = Arrays.asList(rules);
     }
 
-    public void verify(Properties properties) throws ResourceProvisionException {
+    public void forEach(Properties properties) throws ResourceProvisionException {
         rules.forEach(rule -> rule.accept(properties));
+    }
+
+    public interface Verifier<T extends ResourceProperties> {
+
+        default void verify(T properties) throws ResourceProvisionException {
+            if (properties.hasDeserializationError()) {
+                throw new ResourceProvisionException(properties.getDeserializationError());
+            }
+
+            forEach(properties);
+        }
+
+        default void forEach(T properties) throws ResourceProvisionException {
+        }
+
     }
 
     @FunctionalInterface

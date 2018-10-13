@@ -14,12 +14,14 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 public class AbstractFactoryTest {
 
@@ -32,6 +34,22 @@ public class AbstractFactoryTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         spyFactory = Mockito.spy(TestFactory.class);
+    }
+
+    @DataProvider
+    public Object[][] samples() {
+        return new Object[][]{
+            sample(AbstractFactory::createCreateFacade),
+            sample(AbstractFactory::createUpdateFacade),
+            sample(AbstractFactory::createDeleteFacade)
+        };
+    }
+
+    @Test(dataProvider = "samples",
+        expectedExceptions = ResourceProvisionException.class,
+        expectedExceptionsMessageRegExp = "Unsupported Resource Type")
+    public void testVerifyUnsupportedType(BiFunction<AbstractFactory, ResourceProvisionRequest, Facade> function) {
+        function.apply(spyFactory, new ResourceProvisionRequest());
     }
 
     @Test
@@ -93,6 +111,10 @@ public class AbstractFactoryTest {
         Assert.assertEquals(request.getRequestType(), RequestType.Update);
         Assert.assertEquals(request.getResponseUrl(), "pre-signed-url-for-update-response");
         Assert.assertTrue(request.getResourceProperties() instanceof TypeOne);
+    }
+
+    private static Object[] sample(BiFunction<AbstractFactory, ResourceProvisionRequest, Facade> function) {
+        return new Object[]{function};
     }
 
     @Getter

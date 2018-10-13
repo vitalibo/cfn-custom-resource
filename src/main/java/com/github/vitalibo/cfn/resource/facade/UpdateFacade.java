@@ -3,8 +3,9 @@ package com.github.vitalibo.cfn.resource.facade;
 import com.github.vitalibo.cfn.resource.Facade;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
+import com.github.vitalibo.cfn.resource.util.Rules;
 
-public interface UpdateFacade<Properties extends ResourceProperties, Data extends ResourceData<Data>> extends Facade {
+public interface UpdateFacade<Properties extends ResourceProperties, Data extends ResourceData<Data>> extends Facade, Rules.Verifier<Properties> {
 
     @Override
     @SuppressWarnings("unchecked")
@@ -40,8 +41,5 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
     }
 
     Data update(Properties properties, Properties oldProperties, String physicalResourceId) throws ResourceProvisionException;
-
-    default void verify(Properties properties) throws ResourceProvisionException {
-    }
 
 }
