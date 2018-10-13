@@ -51,7 +51,7 @@ public class ResourceProvisionHandler<Type extends Enum<?> & ResourceType> imple
                     throw new IllegalStateException();
             }
 
-            response = facade.process(request);
+            response = facade.process(request, context);
         } catch (ResourceProvisionException e) {
             response = new ResourceProvisionResponse()
                 .withStatus(Status.FAILED)

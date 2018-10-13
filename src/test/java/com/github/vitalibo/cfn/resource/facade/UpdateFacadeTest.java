@@ -1,7 +1,9 @@
 package com.github.vitalibo.cfn.resource.facade;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -11,6 +13,8 @@ import org.testng.annotations.Test;
 
 public class UpdateFacadeTest {
 
+    @Mock
+    private Context mockContext;
     @Spy
     private UpdateFacade<ResourceProperties, ? extends ResourceData> spyUpdateFacade;
 
@@ -26,9 +30,9 @@ public class UpdateFacadeTest {
         ResourceProperties oldResourceProperties = request.getOldResourceProperties();
         ResourceData resourceData = makeResourceData();
         Mockito.doReturn(resourceData)
-            .when(spyUpdateFacade).update(Mockito.any(), Mockito.any(), Mockito.anyString());
+            .when(spyUpdateFacade).update(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
 
-        ResourceProvisionResponse actual = spyUpdateFacade.process(request);
+        ResourceProvisionResponse actual = spyUpdateFacade.process(request, mockContext);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -40,7 +44,8 @@ public class UpdateFacadeTest {
         Assert.assertEquals(actual.getData(), resourceData);
         Mockito.verify(spyUpdateFacade).verify(resourceProperties);
         Mockito.verify(spyUpdateFacade).verify(oldResourceProperties);
-        Mockito.verify(spyUpdateFacade).update(resourceProperties, oldResourceProperties, "physical resource id");
+        Mockito.verify(spyUpdateFacade)
+            .update(resourceProperties, oldResourceProperties, "physical resource id", mockContext);
     }
 
     @Test
@@ -50,9 +55,9 @@ public class UpdateFacadeTest {
         Mockito.doThrow(ResourceProvisionException.class)
             .when(spyUpdateFacade).verify(request.getOldResourceProperties());
         Mockito.doReturn(resourceData)
-            .when(spyUpdateFacade).update(Mockito.any(), Mockito.any(), Mockito.anyString());
+            .when(spyUpdateFacade).update(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
 
-        ResourceProvisionResponse actual = spyUpdateFacade.process(request);
+        ResourceProvisionResponse actual = spyUpdateFacade.process(request, mockContext);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -64,7 +69,8 @@ public class UpdateFacadeTest {
         Assert.assertNull(actual.getData());
         Mockito.verify(spyUpdateFacade).verify(request.getResourceProperties());
         Mockito.verify(spyUpdateFacade).verify(request.getOldResourceProperties());
-        Mockito.verify(spyUpdateFacade, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.anyString());
+        Mockito.verify(spyUpdateFacade, Mockito.never())
+            .update(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
     }
 
     @Test
@@ -73,11 +79,12 @@ public class UpdateFacadeTest {
         Mockito.doThrow(ResourceProvisionException.class)
             .when(spyUpdateFacade).verify(request.getResourceProperties());
 
-        Assert.expectThrows(ResourceProvisionException.class, () -> spyUpdateFacade.process(request));
+        Assert.expectThrows(ResourceProvisionException.class, () -> spyUpdateFacade.process(request, mockContext));
 
         Mockito.verify(spyUpdateFacade).verify(request.getResourceProperties());
         Mockito.verify(spyUpdateFacade, Mockito.never()).verify(request.getOldResourceProperties());
-        Mockito.verify(spyUpdateFacade, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.anyString());
+        Mockito.verify(spyUpdateFacade, Mockito.never())
+            .update(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
     }
 
     private static ResourceProvisionRequest makeResourceProvisionRequest() {

@@ -74,7 +74,7 @@ public class ResourceProvisionHandlerTest {
         ResourceProvisionRequest request = makeResourceProvisionRequest();
         request.setRequestType(RequestType.Create);
         ResourceProvisionResponse response = makeResourceProvisionResponse();
-        Mockito.when(mockFacade.process(request)).thenReturn(response);
+        Mockito.when(mockFacade.process(request, mockContext)).thenReturn(response);
 
         ResourceProvisionResponse actual = spyResourceProvisionHandler.handleRequest(request, mockContext);
 
@@ -82,7 +82,7 @@ public class ResourceProvisionHandlerTest {
         Assert.assertEquals(actual.getStatus(), Status.SUCCESS);
         Assert.assertEquals(actual.getRequestId(), "request id");
         Mockito.verify(mockAbstractFactory).createCreateFacade(request);
-        Mockito.verify(mockFacade).process(request);
+        Mockito.verify(mockFacade).process(request, mockContext);
         Mockito.verify(mockPreSignedUrl).upload(response);
     }
 
@@ -95,7 +95,7 @@ public class ResourceProvisionHandlerTest {
         ResourceProvisionRequest request = makeResourceProvisionRequest();
         request.setRequestType(RequestType.Delete);
         ResourceProvisionResponse response = makeResourceProvisionResponse();
-        Mockito.when(mockFacade.process(request)).thenReturn(response);
+        Mockito.when(mockFacade.process(request, mockContext)).thenReturn(response);
 
         ResourceProvisionResponse actual = spyResourceProvisionHandler.handleRequest(request, mockContext);
 
@@ -103,7 +103,7 @@ public class ResourceProvisionHandlerTest {
         Assert.assertEquals(actual.getStatus(), Status.SUCCESS);
         Assert.assertEquals(actual.getRequestId(), "request id");
         Mockito.verify(mockAbstractFactory).createDeleteFacade(request);
-        Mockito.verify(mockFacade).process(request);
+        Mockito.verify(mockFacade).process(request, mockContext);
         Mockito.verify(mockPreSignedUrl).upload(response);
     }
 
@@ -116,7 +116,7 @@ public class ResourceProvisionHandlerTest {
         ResourceProvisionRequest request = makeResourceProvisionRequest();
         request.setRequestType(RequestType.Update);
         ResourceProvisionResponse response = makeResourceProvisionResponse();
-        Mockito.when(mockFacade.process(request)).thenReturn(response);
+        Mockito.when(mockFacade.process(request, mockContext)).thenReturn(response);
 
         ResourceProvisionResponse actual = spyResourceProvisionHandler.handleRequest(request, mockContext);
 
@@ -124,7 +124,7 @@ public class ResourceProvisionHandlerTest {
         Assert.assertEquals(actual.getStatus(), Status.SUCCESS);
         Assert.assertEquals(actual.getRequestId(), "request id");
         Mockito.verify(mockAbstractFactory).createUpdateFacade(request);
-        Mockito.verify(mockFacade).process(request);
+        Mockito.verify(mockFacade).process(request, mockContext);
         Mockito.verify(mockPreSignedUrl).upload(response);
     }
 
@@ -136,7 +136,7 @@ public class ResourceProvisionHandlerTest {
             .thenReturn(mockPreSignedUrl);
         ResourceProvisionRequest request = makeResourceProvisionRequest();
         request.setRequestType(RequestType.Create);
-        Mockito.when(mockFacade.process(request)).thenThrow(new ResourceProvisionException("exception message"));
+        Mockito.when(mockFacade.process(request, mockContext)).thenThrow(new ResourceProvisionException("exception message"));
 
         ResourceProvisionResponse actual = spyResourceProvisionHandler.handleRequest(request, mockContext);
 
@@ -144,7 +144,7 @@ public class ResourceProvisionHandlerTest {
         Assert.assertEquals(actual.getStatus(), Status.FAILED);
         Assert.assertEquals(actual.getRequestId(), "request id");
         Mockito.verify(mockAbstractFactory).createCreateFacade(request);
-        Mockito.verify(mockFacade).process(request);
+        Mockito.verify(mockFacade).process(request, mockContext);
         Mockito.verify(mockPreSignedUrl).upload(captorResourceProvisionResponse.capture());
         ResourceProvisionResponse response = captorResourceProvisionResponse.getValue();
         Assert.assertEquals(response.getStatus(), Status.FAILED);

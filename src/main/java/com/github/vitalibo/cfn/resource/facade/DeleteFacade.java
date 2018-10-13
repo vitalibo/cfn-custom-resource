@@ -1,5 +1,6 @@
 package com.github.vitalibo.cfn.resource.facade;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.github.vitalibo.cfn.resource.Facade;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
@@ -9,7 +10,7 @@ public interface DeleteFacade<Properties extends ResourceProperties, Data extend
 
     @Override
     @SuppressWarnings("unchecked")
-    default ResourceProvisionResponse process(ResourceProvisionRequest request) throws ResourceProvisionException {
+    default ResourceProvisionResponse process(ResourceProvisionRequest request, Context context) throws ResourceProvisionException {
         final Properties resourceProperties = (Properties) request.getResourceProperties();
 
         if (StackUtils.hasDefaultPhysicalResourceId(request) || resourceProperties.hasDeserializationError()) {
@@ -22,7 +23,7 @@ public interface DeleteFacade<Properties extends ResourceProperties, Data extend
                 .withPhysicalResourceId(request.getPhysicalResourceId());
         }
 
-        final Data resourceData = delete(resourceProperties, request.getPhysicalResourceId());
+        final Data resourceData = delete(resourceProperties, request.getPhysicalResourceId(), context);
 
         return new ResourceProvisionResponse()
             .withStatus(Status.SUCCESS)
@@ -33,6 +34,6 @@ public interface DeleteFacade<Properties extends ResourceProperties, Data extend
             .withData(resourceData);
     }
 
-    Data delete(Properties properties, String physicalResourceId) throws ResourceProvisionException;
+    Data delete(Properties properties, String physicalResourceId, Context context) throws ResourceProvisionException;
 
 }

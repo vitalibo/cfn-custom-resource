@@ -1,5 +1,6 @@
 package com.github.vitalibo.cfn.resource.facade;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.github.vitalibo.cfn.resource.Facade;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
@@ -9,7 +10,7 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
 
     @Override
     @SuppressWarnings("unchecked")
-    default ResourceProvisionResponse process(ResourceProvisionRequest request) throws ResourceProvisionException {
+    default ResourceProvisionResponse process(ResourceProvisionRequest request, Context context) throws ResourceProvisionException {
         final Properties resourceProperties = (Properties) request.getResourceProperties();
         verify(resourceProperties);
 
@@ -29,7 +30,7 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
         }
 
         final Data resourceData = update(
-            resourceProperties, oldResourceProperties, request.getPhysicalResourceId());
+            resourceProperties, oldResourceProperties, request.getPhysicalResourceId(), context);
 
         return new ResourceProvisionResponse()
             .withStatus(Status.SUCCESS)
@@ -40,6 +41,6 @@ public interface UpdateFacade<Properties extends ResourceProperties, Data extend
             .withData(resourceData);
     }
 
-    Data update(Properties properties, Properties oldProperties, String physicalResourceId) throws ResourceProvisionException;
+    Data update(Properties properties, Properties oldProperties, String physicalResourceId, Context context) throws ResourceProvisionException;
 
 }

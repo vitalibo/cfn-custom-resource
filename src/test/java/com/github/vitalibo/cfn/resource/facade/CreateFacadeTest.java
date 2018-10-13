@@ -1,7 +1,9 @@
 package com.github.vitalibo.cfn.resource.facade;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.github.vitalibo.cfn.resource.ResourceProvisionException;
 import com.github.vitalibo.cfn.resource.model.*;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -11,6 +13,8 @@ import org.testng.annotations.Test;
 
 public class CreateFacadeTest {
 
+    @Mock
+    private Context mockContext;
     @Spy
     private CreateFacade<ResourceProperties, ? extends ResourceData> spyCreateFacade;
 
@@ -33,9 +37,9 @@ public class CreateFacadeTest {
         ResourceData resourceData = new ResourceData();
         resourceData.setPhysicalResourceId("physical resource id");
         Mockito.doReturn(resourceData)
-            .when(spyCreateFacade).create(Mockito.eq(resourceProperties));
+            .when(spyCreateFacade).create(Mockito.eq(resourceProperties), Mockito.eq(mockContext));
 
-        ResourceProvisionResponse actual = spyCreateFacade.process(request);
+        ResourceProvisionResponse actual = spyCreateFacade.process(request, mockContext);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -46,7 +50,7 @@ public class CreateFacadeTest {
         Assert.assertEquals(actual.getPhysicalResourceId(), "physical resource id");
         Assert.assertEquals(actual.getData(), resourceData);
         Mockito.verify(spyCreateFacade).verify(resourceProperties);
-        Mockito.verify(spyCreateFacade).create(resourceProperties);
+        Mockito.verify(spyCreateFacade).create(resourceProperties, mockContext);
     }
 
     @Test
@@ -58,10 +62,10 @@ public class CreateFacadeTest {
         Mockito.doThrow(ResourceProvisionException.class)
             .when(spyCreateFacade).verify(Mockito.any());
 
-        Assert.expectThrows(ResourceProvisionException.class, () -> spyCreateFacade.process(request));
+        Assert.expectThrows(ResourceProvisionException.class, () -> spyCreateFacade.process(request, mockContext));
 
         Mockito.verify(spyCreateFacade).verify(resourceProperties);
-        Mockito.verify(spyCreateFacade, Mockito.never()).create(Mockito.any());
+        Mockito.verify(spyCreateFacade, Mockito.never()).create(Mockito.any(), Mockito.eq(mockContext));
     }
 
 }

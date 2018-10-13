@@ -1,6 +1,8 @@
 package com.github.vitalibo.cfn.resource.facade;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.github.vitalibo.cfn.resource.model.*;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -10,6 +12,8 @@ import org.testng.annotations.Test;
 
 public class DeleteFacadeTest {
 
+    @Mock
+    private Context mockContext;
     @Spy
     private DeleteFacade<ResourceProperties, ? extends ResourceData> spyDeleteFacade;
 
@@ -25,9 +29,9 @@ public class DeleteFacadeTest {
         ResourceData resourceData = makeResourceData();
 
         Mockito.doReturn(resourceData)
-            .when(spyDeleteFacade).delete(Mockito.eq(resourceProperties), Mockito.anyString());
+            .when(spyDeleteFacade).delete(Mockito.eq(resourceProperties), Mockito.anyString(), Mockito.eq(mockContext));
 
-        ResourceProvisionResponse actual = spyDeleteFacade.process(request);
+        ResourceProvisionResponse actual = spyDeleteFacade.process(request, mockContext);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -37,7 +41,7 @@ public class DeleteFacadeTest {
         Assert.assertEquals(actual.getStackId(), "stack id");
         Assert.assertEquals(actual.getPhysicalResourceId(), "physical resource id new");
         Assert.assertEquals(actual.getData(), resourceData);
-        Mockito.verify(spyDeleteFacade).delete(resourceProperties, "physical resource id");
+        Mockito.verify(spyDeleteFacade).delete(resourceProperties, "physical resource id", mockContext);
     }
 
     @Test
@@ -47,9 +51,9 @@ public class DeleteFacadeTest {
         ResourceData resourceData = makeResourceData();
 
         Mockito.doReturn(resourceData)
-            .when(spyDeleteFacade).delete(Mockito.any(), Mockito.anyString());
+            .when(spyDeleteFacade).delete(Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
 
-        ResourceProvisionResponse actual = spyDeleteFacade.process(request);
+        ResourceProvisionResponse actual = spyDeleteFacade.process(request, mockContext);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -59,7 +63,7 @@ public class DeleteFacadeTest {
         Assert.assertEquals(actual.getStackId(), "stack id");
         Assert.assertEquals(actual.getPhysicalResourceId(), "stack id-logical resource id-Y6AZ910KAH");
         Assert.assertNull(actual.getData());
-        Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString());
+        Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
     }
 
     @Test
@@ -70,9 +74,9 @@ public class DeleteFacadeTest {
         ResourceData resourceData = makeResourceData();
 
         Mockito.doReturn(resourceData)
-            .when(spyDeleteFacade).delete(Mockito.any(), Mockito.anyString());
+            .when(spyDeleteFacade).delete(Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
 
-        ResourceProvisionResponse actual = spyDeleteFacade.process(request);
+        ResourceProvisionResponse actual = spyDeleteFacade.process(request, mockContext);
 
         Assert.assertNotNull(actual);
         Assert.assertNotNull(actual);
@@ -82,7 +86,7 @@ public class DeleteFacadeTest {
         Assert.assertEquals(actual.getStackId(), "stack id");
         Assert.assertEquals(actual.getPhysicalResourceId(), "physical resource id");
         Assert.assertNull(actual.getData());
-        Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString());
+        Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString(), Mockito.eq(mockContext));
     }
 
     private static ResourceProvisionRequest makeResourceProvisionRequest() {
