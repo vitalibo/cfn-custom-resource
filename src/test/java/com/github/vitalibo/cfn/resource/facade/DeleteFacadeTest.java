@@ -43,7 +43,7 @@ public class DeleteFacadeTest {
     @Test
     public void testProcessWithDefaultPhysicalResourceId() {
         ResourceProvisionRequest request = makeResourceProvisionRequest();
-        request.setPhysicalResourceId("default");
+        request.setPhysicalResourceId("stack id-logical resource id-Y6AZ910KAH");
         ResourceData resourceData = makeResourceData();
 
         Mockito.doReturn(resourceData)
@@ -57,7 +57,7 @@ public class DeleteFacadeTest {
         Assert.assertEquals(actual.getLogicalResourceId(), "logical resource id");
         Assert.assertEquals(actual.getRequestId(), "request id");
         Assert.assertEquals(actual.getStackId(), "stack id");
-        Assert.assertEquals(actual.getPhysicalResourceId(), "default");
+        Assert.assertEquals(actual.getPhysicalResourceId(), "stack id-logical resource id-Y6AZ910KAH");
         Assert.assertNull(actual.getData());
         Mockito.verify(spyDeleteFacade, Mockito.never()).delete(Mockito.any(), Mockito.anyString());
     }
