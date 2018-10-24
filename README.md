@@ -1,6 +1,6 @@
 # CloudFormation Custom Resource Provisioning Lambda
 
-This library allow you simple write custom provisioning logic in CloudFormation templates
+This library allow you simple write custom provisioning logic in CloudFormation templates.
 
 [![Build Status](https://travis-ci.org/vitalibo/cfn-custom-resource.svg?branch=master)](https://travis-ci.org/vitalibo/cfn-custom-resource)
 
@@ -92,7 +92,7 @@ public enum CustomResourceType implements ResourceType {
 ```
 
 After describing types, you can move to implementation business behavior of custom resource types.
-For this you need implement appropriate interfaces `CreateFacade`, `DeleteFacade` and `UpdatesFacade`.
+For this you need implement appropriate interfaces `CreateFacade`, `DeleteFacade` and `UpdateFacade`.
 Also here you can add validation `Rules` and delegate it execution to facades.
 Your custom rules must implement functional interface `Rules.Rule`.
 
