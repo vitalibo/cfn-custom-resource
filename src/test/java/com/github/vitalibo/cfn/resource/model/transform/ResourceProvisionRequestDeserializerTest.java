@@ -36,7 +36,7 @@ public class ResourceProvisionRequestDeserializerTest {
 
     @Test
     public void testDeserializeTypeOne() throws IOException {
-        String json = TestHelper.resourceAsString("/RequestTypeOne.json");
+        String json = TestHelper.resourceAsString("/sample/RequestTypeOne.json");
 
         ResourceProvisionRequest actual = jackson.readValue(json, ResourceProvisionRequest.class);
 
@@ -62,7 +62,7 @@ public class ResourceProvisionRequestDeserializerTest {
 
     @Test
     public void testDeserializeTypeTwo() throws IOException {
-        String json = TestHelper.resourceAsString("/RequestTypeTwo.json");
+        String json = TestHelper.resourceAsString("/sample/RequestTypeTwo.json");
 
         ResourceProvisionRequest actual = jackson.readValue(json, ResourceProvisionRequest.class);
 
@@ -82,7 +82,7 @@ public class ResourceProvisionRequestDeserializerTest {
 
     @Test
     public void testDeserializeWithCastProblem() throws IOException {
-        String json = TestHelper.resourceAsString("/RequestTypeThree.json");
+        String json = TestHelper.resourceAsString("/sample/RequestTypeThree.json");
 
         ResourceProvisionRequest actual = jackson.readValue(json, ResourceProvisionRequest.class);
 
@@ -108,7 +108,7 @@ public class ResourceProvisionRequestDeserializerTest {
 
     @Test
     public void testDeserializeWithUnknownProperties() throws IOException {
-        String json = TestHelper.resourceAsString("/RequestTypeThree.json")
+        String json = TestHelper.resourceAsString("/sample/RequestTypeThree.json")
             .replaceAll("TypeThree", "TypeFour");
 
         ResourceProvisionRequest actual = jackson.readValue(json, ResourceProvisionRequest.class);

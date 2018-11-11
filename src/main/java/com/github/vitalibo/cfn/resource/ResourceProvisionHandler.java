@@ -9,6 +9,8 @@ import com.github.vitalibo.cfn.resource.model.ResourceType;
 import com.github.vitalibo.cfn.resource.model.Status;
 import com.github.vitalibo.cfn.resource.util.PreSignedUrl;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +20,19 @@ import java.io.OutputStreamWriter;
 @AllArgsConstructor
 public class ResourceProvisionHandler<Type extends Enum<?> & ResourceType> implements RequestStreamHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(ResourceProvisionHandler.class);
+
     private final AbstractFactory<Type> factory;
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         final ObjectMapper jackson = factory.createJackson();
+
         ResourceProvisionRequest request = jackson.readValue(input, ResourceProvisionRequest.class);
+        logger.info("ResourceProvisionRequest: {}", request);
 
         ResourceProvisionResponse response = handleRequest(request, context);
+        logger.info("ResourceProvisionResponse: {}", response);
 
         try (OutputStreamWriter writer = new OutputStreamWriter(output)) {
             writer.write(jackson.writeValueAsString(response));
@@ -33,7 +40,7 @@ public class ResourceProvisionHandler<Type extends Enum<?> & ResourceType> imple
         }
     }
 
-    public ResourceProvisionResponse handleRequest(ResourceProvisionRequest request, Context context) throws IOException {
+    ResourceProvisionResponse handleRequest(ResourceProvisionRequest request, Context context) throws IOException {
         ResourceProvisionResponse response;
         try {
             Facade facade;
@@ -52,7 +59,8 @@ public class ResourceProvisionHandler<Type extends Enum<?> & ResourceType> imple
             }
 
             response = facade.process(request, context);
-        } catch (ResourceProvisionException e) {
+        } catch (Exception e) {
+            logger.error("failed processing", e);
             response = new ResourceProvisionResponse()
                 .withStatus(Status.FAILED)
                 .withReason(e.getMessage())

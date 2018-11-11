@@ -107,7 +107,7 @@ public class AbstractFactoryTest {
 
         Assert.assertNotNull(actual);
         ResourceProvisionRequest request = actual.readValue(
-            TestHelper.resourceAsString("/RequestTypeOne.json"), ResourceProvisionRequest.class);
+            TestHelper.resourceAsString("/sample/RequestTypeOne.json"), ResourceProvisionRequest.class);
         Assert.assertEquals(request.getRequestType(), RequestType.Update);
         Assert.assertEquals(request.getResponseUrl(), "pre-signed-url-for-update-response");
         Assert.assertTrue(request.getResourceProperties() instanceof TypeOne);
