@@ -37,7 +37,7 @@ This library located on S3 remote repository, given this, add it repository in y
 <repositories>
     <repository>
         <id>repo.vitalibo.github.com</id>
-        <url>s3://repo.maven.vitalibo.github.com/release</url>
+        <url>s3://public.repo.maven.vitalibo.github.com/release</url>
     </repository>
 </repositories>
 ```
