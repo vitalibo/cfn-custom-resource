@@ -21,23 +21,17 @@ First you need create a maven project, and include following dependency in it:
 </dependency>
 ```
 
-This library located on S3 remote repository, given this, add it repository in your `pom.xml`:
+This library located on Github remote repository, given this, add it repository in your `pom.xml`:
 
 ```xml
-<build>
-    <extensions>
-        <extension>
-            <groupId>org.kuali.maven.wagons</groupId>
-            <artifactId>maven-s3-wagon</artifactId>
-            <version>1.2.1</version>
-        </extension>
-    </extensions>
-</build>
- 
 <repositories>
     <repository>
-        <id>repo.vitalibo.github.com</id>
-        <url>s3://public.repo.maven.vitalibo.github.com/release</url>
+        <id>cfn-custom-resource-mvn-repo</id>
+        <url>https://raw.github.com/vitalibo/public-maven-repository/release/</url>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+        </snapshots>
     </repository>
 </repositories>
 ```
