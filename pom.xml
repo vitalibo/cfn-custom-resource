@@ -19,7 +19,7 @@
     <properties>
         <jdk.version>1.8</jdk.version>
         <aws.lambda.core.version>1.2.0</aws.lambda.core.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <slf4j.version>1.7.25</slf4j.version>
         <lombok.version>1.18.0</lombok.version>
         <testng.version>6.14.3</testng.version>
